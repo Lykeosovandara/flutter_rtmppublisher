@@ -1,6 +1,5 @@
 package com.whelksoft.camera_with_rtmp
 
-
 import android.app.Activity
 import android.content.Context
 import android.graphics.ImageFormat
@@ -13,9 +12,7 @@ import android.media.CamcorderProfile
 import android.os.Build
 import android.util.Size
 import androidx.annotation.RequiresApi
-import com.whelksoft.camera_with_rtmp.Camera.ResolutionPreset
 import java.util.*
-
 
 /** Provides various utilities for camera.  */
 object CameraUtils {

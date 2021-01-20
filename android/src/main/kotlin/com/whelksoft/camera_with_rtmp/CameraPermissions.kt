@@ -7,7 +7,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import io.flutter.plugin.common.PluginRegistry.RequestPermissionsResultListener
-import kotlin.reflect.KFunction1
 
 class CameraPermissions {
 

@@ -1,1 +1,2 @@
+include ':webrtc-android-framework'
 rootProject.name = 'camera_with_rtmp'

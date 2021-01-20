@@ -2,7 +2,6 @@ package com.whelksoft.camera_with_rtmp
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Point
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
@@ -13,10 +12,10 @@ import android.util.Log
 import android.view.OrientationEventListener
 import androidx.annotation.RequiresApi
 import com.whelksoft.camera_with_rtmp.CameraPermissions.ResultCallback
+import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.*
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.embedding.engine.FlutterEngine
-import java.util.HashMap
+import java.util.*
 
 class MethodCallHandlerImplNew(
         private val activity: Activity,
@@ -179,7 +178,7 @@ class MethodCallHandlerImplNew(
             val enableAudio = call.argument<Boolean>("enableAudio")!!
             dartMessenger = DartMessenger(messenger, textureId)
 
-            val preset = Camera.ResolutionPreset.valueOf(resolutionPreset)
+            val preset = ResolutionPreset.valueOf(resolutionPreset)
             val previewSize = CameraUtils.computeBestPreviewSize(cameraName, preset)
             val reply: MutableMap<String, Any> = HashMap()
             reply["textureId"] = textureId

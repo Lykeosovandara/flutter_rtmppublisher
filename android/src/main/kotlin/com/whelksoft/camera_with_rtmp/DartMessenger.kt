@@ -6,7 +6,6 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.EventSink
 import java.util.*
 
-
 class DartMessenger(messenger: BinaryMessenger, eventChannelId: Long) {
     private var eventSink: EventSink? = null
 

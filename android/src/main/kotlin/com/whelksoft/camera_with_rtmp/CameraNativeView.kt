@@ -3,7 +3,6 @@ package com.whelksoft.camera_with_rtmp
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Point
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
@@ -11,39 +10,32 @@ import android.hardware.camera2.CameraMetadata
 import android.util.Log
 import android.view.SurfaceHolder
 import android.view.View
-import android.widget.Toast
-import com.pedro.encoder.input.video.CameraHelper.Facing.BACK
-import com.pedro.encoder.input.video.CameraHelper.Facing.FRONT
-import com.pedro.rtplibrary.rtmp.RtmpCamera2
-import com.pedro.rtplibrary.view.LightOpenGlView
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.platform.PlatformView
 import net.ossrs.rtmp.ConnectCheckerRtmp
 import java.io.*
 
-
 class CameraNativeView(
         private var activity: Activity? = null,
         private var enableAudio: Boolean = false,
-        private val preset: Camera.ResolutionPreset,
+        private val preset: ResolutionPreset,
         private var cameraName: String,
         private var dartMessenger: DartMessenger? = null) :
         PlatformView,
-        SurfaceHolder.Callback,
-        ConnectCheckerRtmp {
+        SurfaceHolder.Callback {
 
-    private val glView = LightOpenGlView(activity)
-    private val rtmpCamera: RtmpCamera2
+//    private val glView = LightOpenGlView(activity)
+//    private val rtmpCamera: RtmpCamera2
 
     private var isSurfaceCreated = false
     private var fps = 0
 
     init {
-        glView.isKeepAspectRatio = true
-        glView.holder.addCallback(this)
-        rtmpCamera = RtmpCamera2(glView, this)
-        rtmpCamera.setReTries(10)
-        rtmpCamera.setFpsListener { fps = it }
+//        glView.isKeepAspectRatio = true
+//        glView.holder.addCallback(this)
+//        rtmpCamera = RtmpCamera2(glView, this)
+//        rtmpCamera.setReTries(10)
+//        rtmpCamera.setFpsListener { fps = it }
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
@@ -52,37 +44,28 @@ class CameraNativeView(
         startPreview(cameraName)
     }
 
-    override fun onAuthSuccessRtmp() {
-    }
+//    override fun onConnectionFailedRtmp(reason: String) {
+//        activity?.runOnUiThread { //Wait 5s and retry connect stream
+//            if (rtmpCamera.reTry(5000, reason)) {
+//                dartMessenger?.send(DartMessenger.EventType.RTMP_RETRY, reason)
+//            } else {
+//                dartMessenger?.send(DartMessenger.EventType.RTMP_STOPPED, "Failed retry")
+//                rtmpCamera.stopStream()
+//            }
+//        }
+//    }
 
-    override fun onNewBitrateRtmp(bitrate: Long) {
-    }
-
-    override fun onConnectionSuccessRtmp() {
-    }
-
-    override fun onConnectionFailedRtmp(reason: String) {
-        activity?.runOnUiThread { //Wait 5s and retry connect stream
-            if (rtmpCamera.reTry(5000, reason)) {
-                dartMessenger?.send(DartMessenger.EventType.RTMP_RETRY, reason)
-            } else {
-                dartMessenger?.send(DartMessenger.EventType.RTMP_STOPPED, "Failed retry")
-                rtmpCamera.stopStream()
-            }
-        }
-    }
-
-    override fun onAuthErrorRtmp() {
-        activity?.runOnUiThread {
-            dartMessenger?.send(DartMessenger.EventType.ERROR, "Auth error")
-        }
-    }
-
-    override fun onDisconnectRtmp() {
-        activity?.runOnUiThread {
-            dartMessenger?.send(DartMessenger.EventType.RTMP_STOPPED, "Disconnected")
-        }
-    }
+//    override fun onAuthErrorRtmp() {
+//        activity?.runOnUiThread {
+//            dartMessenger?.send(DartMessenger.EventType.ERROR, "Auth error")
+//        }
+//    }
+//
+//    override fun onDisconnectRtmp() {
+//        activity?.runOnUiThread {
+//            dartMessenger?.send(DartMessenger.EventType.RTMP_STOPPED, "Disconnected")
+//        }
+//    }
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
         Log.d("CameraNativeView", "surfaceChanged $width $height")
@@ -103,16 +86,16 @@ class CameraNativeView(
             result.error("fileExists", "File at path '$filePath' already exists. Cannot overwrite.", null)
             return
         }
-        glView.takePhoto {
-            try {
-                val outputStream: OutputStream = BufferedOutputStream(FileOutputStream(file))
-                it.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-                outputStream.close()
-                view.post { result.success(null) }
-            } catch (e: IOException) {
-                result.error("IOError", "Failed saving image", null)
-            }
-        }
+//        glView.takePhoto {
+//            try {
+//                val outputStream: OutputStream = BufferedOutputStream(FileOutputStream(file))
+//                it.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+//                outputStream.close()
+//                view.post { result.success(null) }
+//            } catch (e: IOException) {
+//                result.error("IOError", "Failed saving image", null)
+//            }
+//        }
     }
 
     fun startVideoRecording(filePath: String?, result: MethodChannel.Result) {
@@ -131,28 +114,28 @@ class CameraNativeView(
             return
         }
 
-        try {
-            if (!rtmpCamera.isStreaming) {
-                val streamingSize = CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset)
-                if (rtmpCamera.isRecording || rtmpCamera.prepareAudio() && rtmpCamera.prepareVideo(
-                                streamingSize.videoFrameWidth,
-                                streamingSize.videoFrameHeight,
-                                streamingSize.videoBitRate)) {
-                    // ready to start streaming
-                    rtmpCamera.startStream(url)
-                } else {
-                    result.error("videoStreamingFailed", "Error preparing stream, This device cant do it", null)
-                    return
-                }
-            } else {
-                rtmpCamera.stopStream()
-            }
-            result.success(null)
-        } catch (e: CameraAccessException) {
-            result.error("videoStreamingFailed", e.message, null)
-        } catch (e: IOException) {
-            result.error("videoStreamingFailed", e.message, null)
-        }
+//        try {
+//            if (!rtmpCamera.isStreaming) {
+//                val streamingSize = CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset)
+//                if (rtmpCamera.isRecording || rtmpCamera.prepareAudio() && rtmpCamera.prepareVideo(
+//                                streamingSize.videoFrameWidth,
+//                                streamingSize.videoFrameHeight,
+//                                streamingSize.videoBitRate)) {
+//                    // ready to start streaming
+//                    rtmpCamera.startStream(url)
+//                } else {
+//                    result.error("videoStreamingFailed", "Error preparing stream, This device cant do it", null)
+//                    return
+//                }
+//            } else {
+//                rtmpCamera.stopStream()
+//            }
+//            result.success(null)
+//        } catch (e: CameraAccessException) {
+//            result.error("videoStreamingFailed", e.message, null)
+//        } catch (e: IOException) {
+//            result.error("videoStreamingFailed", e.message, null)
+//        }
     }
 
     fun startVideoRecordingAndStreaming(filePath: String?, url: String?, result: MethodChannel.Result) {
@@ -170,43 +153,43 @@ class CameraNativeView(
     }
 
     fun stopVideoRecordingOrStreaming(result: MethodChannel.Result) {
-        try {
-            rtmpCamera.apply {
-                if (isStreaming) stopStream()
-                if (isRecording) stopRecord()
-            }
-            result.success(null)
-        } catch (e: CameraAccessException) {
-            result.error("videoRecordingFailed", e.message, null)
-        } catch (e: IllegalStateException) {
-            result.error("videoRecordingFailed", e.message, null)
-        }
+//        try {
+//            rtmpCamera.apply {
+//                if (isStreaming) stopStream()
+//                if (isRecording) stopRecord()
+//            }
+//            result.success(null)
+//        } catch (e: CameraAccessException) {
+//            result.error("videoRecordingFailed", e.message, null)
+//        } catch (e: IllegalStateException) {
+//            result.error("videoRecordingFailed", e.message, null)
+//        }
     }
 
     fun stopVideoRecording(result: MethodChannel.Result) {
-        try {
-            rtmpCamera.apply {
-                if (isRecording) stopRecord()
-            }
-            result.success(null)
-        } catch (e: CameraAccessException) {
-            result.error("stopVideoRecordingFailed", e.message, null)
-        } catch (e: IllegalStateException) {
-            result.error("stopVideoRecordingFailed", e.message, null)
-        }
+//        try {
+//            rtmpCamera.apply {
+//                if (isRecording) stopRecord()
+//            }
+//            result.success(null)
+//        } catch (e: CameraAccessException) {
+//            result.error("stopVideoRecordingFailed", e.message, null)
+//        } catch (e: IllegalStateException) {
+//            result.error("stopVideoRecordingFailed", e.message, null)
+//        }
     }
 
     fun stopVideoStreaming(result: MethodChannel.Result) {
-        try {
-            rtmpCamera.apply {
-                if (isStreaming) stopStream()
-            }
-            result.success(null)
-        } catch (e: CameraAccessException) {
-            result.error("stopVideoStreamingFailed", e.message, null)
-        } catch (e: IllegalStateException) {
-            result.error("stopVideoStreamingFailed", e.message, null)
-        }
+//        try {
+//            rtmpCamera.apply {
+//                if (isStreaming) stopStream()
+//            }
+//            result.success(null)
+//        } catch (e: CameraAccessException) {
+//            result.error("stopVideoStreamingFailed", e.message, null)
+//        } catch (e: IllegalStateException) {
+//            result.error("stopVideoStreamingFailed", e.message, null)
+//        }
     }
 
     fun pauseVideoRecording(result: Any) {
@@ -232,43 +215,43 @@ class CameraNativeView(
 
         Log.d("CameraNativeView", "startPreview: $preset")
         if (isSurfaceCreated) {
-            try {
-                if (rtmpCamera.isOnPreview) {
-                    rtmpCamera.stopPreview()
-                }
-
-                rtmpCamera.startPreview(if (isFrontFacing(targetCamera)) FRONT else BACK, previewSize.width, previewSize.height)
-            } catch (e: CameraAccessException) {
-//                close()
-                activity?.runOnUiThread { dartMessenger?.send(DartMessenger.EventType.ERROR, "CameraAccessException") }
-                return
-            }
+//            try {
+//                if (rtmpCamera.isOnPreview) {
+//                    rtmpCamera.stopPreview()
+//                }
+//
+//                rtmpCamera.startPreview(if (isFrontFacing(targetCamera)) FRONT else BACK, previewSize.width, previewSize.height)
+//            } catch (e: CameraAccessException) {
+////                close()
+//                activity?.runOnUiThread { dartMessenger?.send(DartMessenger.EventType.ERROR, "CameraAccessException") }
+//                return
+//            }
         }
     }
 
     fun getStreamStatistics(result: MethodChannel.Result) {
-        val ret = hashMapOf<String, Any>()
-        ret["cacheSize"] = rtmpCamera.cacheSize
-        ret["sentAudioFrames"] = rtmpCamera.sentAudioFrames
-        ret["sentVideoFrames"] = rtmpCamera.sentVideoFrames
-        ret["droppedAudioFrames"] = rtmpCamera.droppedAudioFrames
-        ret["droppedVideoFrames"] = rtmpCamera.droppedVideoFrames
-        ret["isAudioMuted"] = rtmpCamera.isAudioMuted
-        ret["bitrate"] = rtmpCamera.bitrate
-        ret["width"] = rtmpCamera.streamWidth
-        ret["height"] = rtmpCamera.streamHeight
-        ret["fps"] = fps
-        result.success(ret)
+//        val ret = hashMapOf<String, Any>()
+//        ret["cacheSize"] = rtmpCamera.cacheSize
+//        ret["sentAudioFrames"] = rtmpCamera.sentAudioFrames
+//        ret["sentVideoFrames"] = rtmpCamera.sentVideoFrames
+//        ret["droppedAudioFrames"] = rtmpCamera.droppedAudioFrames
+//        ret["droppedVideoFrames"] = rtmpCamera.droppedVideoFrames
+//        ret["isAudioMuted"] = rtmpCamera.isAudioMuted
+//        ret["bitrate"] = rtmpCamera.bitrate
+//        ret["width"] = rtmpCamera.streamWidth
+//        ret["height"] = rtmpCamera.streamHeight
+//        ret["fps"] = fps
+//        result.success(ret)
     }
 
-    override fun getView(): View {
-        return glView
-    }
-
-    override fun dispose() {
-        isSurfaceCreated = false
-        activity = null
-    }
+//    override fun getView(): View {
+//        return glView
+//    }
+//
+//    override fun dispose() {
+//        isSurfaceCreated = false
+//        activity = null
+//    }
 
     private fun isFrontFacing(cameraName: String): Boolean {
         val cameraManager = activity?.getSystemService(Context.CAMERA_SERVICE) as CameraManager

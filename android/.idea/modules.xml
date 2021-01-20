@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webrtc-android-framework/camera_with_rtmp.webrtc-android-framework.iml" filepath="$PROJECT_DIR$/.idea/modules/webrtc-android-framework/camera_with_rtmp.webrtc-android-framework.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.whelksoft.camera_with_rtmp.camera_with_rtmp.iml" filepath="$PROJECT_DIR$/.idea/modules/com.whelksoft.camera_with_rtmp.camera_with_rtmp.iml" />
     </modules>
   </component>
